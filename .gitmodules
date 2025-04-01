@@ -1,0 +1,3 @@
+[submodule "bicep-registry-modules"]
+	path = bicep-registry-modules
+	url = https://github.com/Azure/bicep-registry-modules.git
