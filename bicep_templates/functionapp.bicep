@@ -81,15 +81,15 @@ module function_application_deployment '../bicep-registry-modules/avm/res/web/si
     enableTelemetry: false
     siteConfig: {
       virtualNetworkSubnetId: subnetId // Correct property inside siteConfig
+      ipSecurityRestrictions: [ // Define access restrictions inside siteConfig
+        {
+          name: 'AllowDefaultSubnet'
+          action: 'Allow'
+          priority: 100
+          description: 'Allow traffic only from default subnet'
+          vnetSubnetResourceId: subnetId
+        }
+      ]
     }
-    accessRestrictions: [
-      {
-        name: 'AllowDefaultSubnet'
-        action: 'Allow'
-        priority: 100
-        description: 'Allow traffic only from default subnet'
-        vnetSubnetResourceId: subnetId
-      }
-    ]
   }
 }
