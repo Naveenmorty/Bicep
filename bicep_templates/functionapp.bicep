@@ -20,7 +20,6 @@ var applicationServicePlanName = 'abcdef${environment}-plan-${projectName}-${seq
 var applicationServicePlanSku = environment == 'prd' ? 'P1V3' : 'S1'
 
 //Create Applicaiton Insights resource name from parameters
-var applicationInsightsName = 'abcdef${environment}-appi-${projectName}-${sequenceNumber}'
 
 //Set the Log Analystics Workspace instance
 
@@ -39,7 +38,6 @@ module storage_account_deployment '../bicep-registry-modules/avm/res/storage/sto
     kind: 'StorageV2'
     skuName: 'Standard_LRS'
     accessTier: 'Hot'
-    tags: tags
     enableTelemetry: false
     publicNetworkAccess: 'Enabled'//TODO: CHANGE TO DISABLED - REQUIRES RESEARCH ON HOW FUNCTIONAPP CAN ACCESS WITH DISABLED
     supportsHttpsTrafficOnly: true
@@ -53,15 +51,6 @@ module service_plan_deployment '../bicep-registry-modules/avm/res/web/serverfarm
     skuName: applicationServicePlanSku
     skuCapacity: 1
     kind: 'FunctionApp'
-    tags: tags
-  }
-}
-module application_insights_deployment '../bicep-registry-modules/avm/res/insights/component/main.bicep' = {
-  name: 'application_insights_deployment'
-  params: {
-    name: applicationInsightsName
-    workspaceResourceId: logAnalyticsWorkspaceId
-    tags: tags
   }
 }
 
@@ -69,7 +58,6 @@ var appSettingsKeyValuePairs = {
   FUNCTIONS_EXTENSION_VERSION: '~4'
   FUNCTION_APP_EDIT_MODE: 'readonly'
   FUNCTIONS_WORKER_RUNTIME: 'dotnet-isolated'
-  KeyVaultURI: keyVaultUri
   WEBSITE_RUN_FROM_PACKAGE: '1'
 }
 var appSlotSettingsKeyValuePairs = [
@@ -90,7 +78,6 @@ module function_application_deployment '../bicep-registry-modules/avm/res/web/si
     storageAccountResourceId: storage_account_deployment.outputs.resourceId
     appSettingsKeyValuePairs: appSettingsKeyValuePairs
     slots: appSlotSettingsKeyValuePairs
-    tags: tags
     enableTelemetry: false
     publicNetworkAccess: 'Enabled'
   }
