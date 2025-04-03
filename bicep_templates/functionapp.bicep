@@ -13,6 +13,8 @@ param projectName string = 'template'
 
 param sequenceNumber string = '001'
 
+param subnetId string = '/subscriptions/c44cf592-60df-46be-96bb-1ffb0b5902bb/resourceGroups/dinesh-rg/providers/Microsoft.Network/virtualNetworks/linux-citrin-vm-vnet/subnets/default'
+
 
 var storageAccountName = 'abcdefdevstidentityprov'
 var applicationServicePlanName = 'abcdef${environment}-plan-${projectName}-${sequenceNumber}'
@@ -77,6 +79,6 @@ module function_application_deployment '../bicep-registry-modules/avm/res/web/si
     appSettingsKeyValuePairs: appSettingsKeyValuePairs
     slots: appSlotSettingsKeyValuePairs
     enableTelemetry: false
-    publicNetworkAccess: 'Enabled'
+    virtualNetworkSubnetResourceId: subnetId
   }
 }
