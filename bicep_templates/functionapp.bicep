@@ -5,14 +5,17 @@ param appServicePlanName string
 param vnetName string
 param subnetName string
 param resourceGroupName string
+param applicationInsightsName string
+param logAnalyticsWorkspaceId string
+param tags object = {}
 
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' existing = {
   name: resourceGroupName
 }
 
-module vnetModule 'br:bicep/modules/network/virtual-network:1.0.0' = {
+module vnetModule '../bicep-registry-modules/avm/res/network/virtual-network/main.bicep' = {
   name: 'vnetDeployment'
-  scope: subscription()  // Adjust scope if needed
+  scope: resourceGroup(resourceGroupName)
   params: {
     location: location
     vnetName: vnetName
@@ -20,9 +23,9 @@ module vnetModule 'br:bicep/modules/network/virtual-network:1.0.0' = {
   }
 }
 
-module storageModule 'br:bicep/modules/storage-account:1.0.0' = {
+module storageModule '../bicep-registry-modules/avm/res/storage/storage-account/main.bicep' = {
   name: 'storageDeployment'
-  scope: rg
+  scope: resourceGroup(resourceGroupName)
   params: {
     location: location
     name: storageAccountName
@@ -31,8 +34,9 @@ module storageModule 'br:bicep/modules/storage-account:1.0.0' = {
   }
 }
 
-module application_insights_deployment 'br:bicep/modules/insights/component:1.0.0' = {
-  name: 'application_insights_deployment'
+module applicationInsightsModule '../bicep-registry-modules/avm/res/insights/component/main.bicep' = {
+  name: 'applicationInsightsDeployment'
+  scope: resourceGroup(resourceGroupName)
   params: {
     name: applicationInsightsName
     workspaceResourceId: logAnalyticsWorkspaceId
@@ -40,11 +44,23 @@ module application_insights_deployment 'br:bicep/modules/insights/component:1.0.
   }
 }
 
-module appServicePlanModule 'br:bicep/modules/web/serverfarm:1.0.0' = {
+module appServicePlanModule '../bicep-registry-modules/avm/res/web/serverfarm/main.bicep' = {
   name: 'appServicePlanDeployment'
-  scope: rg
+  scope: resourceGroup(resourceGroupName)
   params: {
     location: location
     appServicePlanName: appServicePlanName
+  }
+}
+
+module functionAppModule './functionapp.bicep' = {
+  name: 'functionAppDeployment'
+  scope: resourceGroup(resourceGroupName)
+  params: {
+    location: location
+    functionAppName: functionAppName
+    storageAccountName: storageModule.outputs.name
+    appServicePlanId: appServicePlanModule.outputs.appServicePlanId
+    subnetId: vnetModule.outputs.subnetId
   }
 }
