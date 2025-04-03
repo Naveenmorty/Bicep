@@ -49,7 +49,7 @@ module service_plan_deployment '../bicep-registry-modules/avm/res/web/serverfarm
     name: applicationServicePlanName
     skuName: applicationServicePlanSku
     skuCapacity: 1
-    kind: 'FunctionApp'
+    kind: 'functionApp'
   }
 }
 
