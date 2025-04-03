@@ -14,7 +14,6 @@ param projectName string = 'template'
 param sequenceNumber string = '001'
 
 
-var initialStorageAccountName = 'abcdef${environment}st${projectName}'
 var storageAccountName = 'abcdefdevstidentityprov'
 var applicationServicePlanName = 'abcdef${environment}-plan-${projectName}-${sequenceNumber}'
 var applicationServicePlanSku = environment == 'prd' ? 'P1V3' : 'S1'
@@ -72,7 +71,6 @@ module function_application_deployment '../bicep-registry-modules/avm/res/web/si
     name: functionApplicationName
     kind: 'functionapp'
     serverFarmResourceId: service_plan_deployment.outputs.resourceId
-    appInsightResourceId: application_insights_deployment.outputs.resourceId
     managedIdentities: { systemAssigned: true }
     keyVaultAccessIdentityResourceId: 'SystemAssigned'
     storageAccountResourceId: storage_account_deployment.outputs.resourceId
