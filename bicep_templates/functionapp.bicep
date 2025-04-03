@@ -82,5 +82,14 @@ module function_application_deployment '../bicep-registry-modules/avm/res/web/si
     siteConfig: {
       virtualNetworkSubnetId: subnetId // Correct property inside siteConfig
     }
+    accessRestrictions: [
+      {
+        name: 'AllowDefaultSubnet'
+        action: 'Allow'
+        priority: 100
+        description: 'Allow traffic only from default subnet'
+        vnetSubnetResourceId: subnetId
+      }
+    ]
   }
 }
