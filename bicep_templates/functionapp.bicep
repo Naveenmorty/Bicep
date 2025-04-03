@@ -120,14 +120,3 @@ module function_application_deployment '../bicep-registry-modules/avm/res/web/si
     publicNetworkAccess: 'Enabled'
   }
 }
-
-module key_vault_deployment '../bicep-registry-modules/avm/res/key-vault/vault/main.bicep' = {
-  name: 'key_vault_deployment'
-  params: {
-    name: keyVaultName
-    sku: 'standard'
-    tags: tags
-    enableRbacAuthorization: true
-  }
-}
-
