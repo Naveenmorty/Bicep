@@ -14,11 +14,7 @@ param projectName string = 'template'
 
 param sequenceNumber string = '001'
 
-@description('Application Category. It is used in tagging of resoruces')
-param applicationCategory string = 'Web Services'
 
-@description('Application Name. It is used in tagging of resoruces')
-param applicationName string = 'Template Service'
 
 
 @description('Start Date. It is used in tagging of resoruces')
