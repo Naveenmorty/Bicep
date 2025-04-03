@@ -80,5 +80,8 @@ module function_application_deployment '../bicep-registry-modules/avm/res/web/si
     slots: appSlotSettingsKeyValuePairs
     enableTelemetry: false
     virtualNetworkSubnetResourceId: subnetId
+    siteConfig: {
+      virtualNetworkSubnetId: subnetId // Correct property inside siteConfig
+    }
   }
 }
