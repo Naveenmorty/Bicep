@@ -10,9 +10,9 @@ resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' existing = {
   name: resourceGroupName
 }
 
-module vnetModule '../bicep-registry-modules/avm/res/network/virtual-network' = {
+module vnetModule 'br:bicep/modules/network/virtual-network:1.0.0' = {
   name: 'vnetDeployment'
-  scope: rg
+  scope: subscription()  // Adjust scope if needed
   params: {
     location: location
     vnetName: vnetName
@@ -20,7 +20,7 @@ module vnetModule '../bicep-registry-modules/avm/res/network/virtual-network' = 
   }
 }
 
-module storageModule '../bicep-registry-modules/avm/res/storage/storage-account/main.bicep' = {
+module storageModule 'br:bicep/modules/storage-account:1.0.0' = {
   name: 'storageDeployment'
   scope: rg
   params: {
@@ -30,31 +30,21 @@ module storageModule '../bicep-registry-modules/avm/res/storage/storage-account/
     kind: 'StorageV2'
   }
 }
-module application_insights_deployment '../bicep-registry-modules/avm/res/insights/component/main.bicep' = {
+
+module application_insights_deployment 'br:bicep/modules/insights/component:1.0.0' = {
   name: 'application_insights_deployment'
   params: {
     name: applicationInsightsName
     workspaceResourceId: logAnalyticsWorkspaceId
     tags: tags
   }
-}d
-module appServicePlanModule '../bicep-registry-modules/avm/res/web/serverfarm/main.bicep' = {
+}
+
+module appServicePlanModule 'br:bicep/modules/web/serverfarm:1.0.0' = {
   name: 'appServicePlanDeployment'
   scope: rg
   params: {
     location: location
     appServicePlanName: appServicePlanName
-  }
-}
-
-module functionAppModule './functionapp.bicep' = {
-  name: 'functionAppDeployment'
-  scope: rg
-  params: {
-    location: location
-    functionAppName: functionAppName
-    storageAccountName: storageModule.outputs.name
-    appServicePlanId: appServicePlanModule.outputs.appServicePlanId
-    subnetId: vnetModule.outputs.subnetId
   }
 }
