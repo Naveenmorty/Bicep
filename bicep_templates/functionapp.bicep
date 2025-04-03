@@ -1,4 +1,3 @@
-
 @description('Application environment. This is used in naming resources')
 @allowed([
   'poc'
@@ -14,23 +13,17 @@ param projectName string = 'template'
 
 param sequenceNumber string = '001'
 
+@description('Application Category. It is used in tagging of resoruces')
+param applicationCategory string = 'Web Services'
 
+@description('Application Name. It is used in tagging of resoruces')
+param applicationName string = 'Template Service'
 
 
 @description('Start Date. It is used in tagging of resoruces')
 param startDate string = utcNow('dd-MMMM-yyyy')
 
-@description('Role assigned as a KeyVault Reader')
-param keyVaultRoleReaderEntraGroup string
 
-@description('Role assigned as a KeyVault Reader')
-param keyVaultRoleOfficerEntraGroup string
-
-@description('Role assigned as a KeyVault Reader')
-@allowed([
-  '736d99e1-bd89-4a70-87ec-3dbf506a0f87' //Locked to Global Admins
-])
-param keyVaultRoleAdminEntraGroup string = '736d99e1-bd89-4a70-87ec-3dbf506a0f87'
 
 
 var initialStorageAccountName = 'abcdef${environment}st${projectName}'
@@ -45,15 +38,26 @@ var applicationServicePlanSku = environment == 'prd' ? 'P1V3' : 'S1'
 var applicationInsightsName = 'abcdef${environment}-appi-${projectName}-${sequenceNumber}'
 
 //Set the Log Analystics Workspace instance
-
+var logAnalyticsWorkspaceId = environment == 'prd'
+  ? '/subscriptions/8026cce0-ff03-4224-99a6-b3ab3194f58c/resourceGroups/abcdefprd-rg-monitor-001/providers/Microsoft.OperationalInsights/workspaces/abcdefprd-log-monitor-001'
+  : '/subscriptions/8026cce0-ff03-4224-99a6-b3ab3194f58c/resourceGroups/abcdefnonprd-rg-monitor-001/providers/Microsoft.OperationalInsights/workspaces/abcdefnonprd-log-monitor-001'
 
 var functionApplicationName = 'abcdef${environment}-func-${projectName}-${sequenceNumber}'
 
 
 
 
+var tags = {
+  'Application Category': applicationCategory
+  'Application Name': applicationName
+  'Application Owner': applicationOwner
+  'Budget Owner': budgetOwner
+  'Start Date': startDate
+}
 
-module storage_account_deployment '../bicep-registry-modules/avm/res/network/virtual-network' = {
+
+
+module storage_account_deployment '../bicep-registry-modules/avm/res/storage/storage-account/main.bicep' = {
   name: 'storage_account_deployment'
   params: {
     name: storageAccountName
@@ -107,12 +111,23 @@ module function_application_deployment '../bicep-registry-modules/avm/res/web/si
     serverFarmResourceId: service_plan_deployment.outputs.resourceId
     appInsightResourceId: application_insights_deployment.outputs.resourceId
     managedIdentities: { systemAssigned: true }
+    keyVaultAccessIdentityResourceId: 'SystemAssigned'
     storageAccountResourceId: storage_account_deployment.outputs.resourceId
     appSettingsKeyValuePairs: appSettingsKeyValuePairs
     slots: appSlotSettingsKeyValuePairs
     tags: tags
     enableTelemetry: false
     publicNetworkAccess: 'Enabled'
+  }
+}
+
+module key_vault_deployment '../bicep-registry-modules/avm/res/key-vault/vault/main.bicep' = {
+  name: 'key_vault_deployment'
+  params: {
+    name: keyVaultName
+    sku: 'standard'
+    tags: tags
+    enableRbacAuthorization: true
   }
 }
 
