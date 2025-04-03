@@ -38,9 +38,7 @@ var applicationServicePlanSku = environment == 'prd' ? 'P1V3' : 'S1'
 var applicationInsightsName = 'abcdef${environment}-appi-${projectName}-${sequenceNumber}'
 
 //Set the Log Analystics Workspace instance
-var logAnalyticsWorkspaceId = environment == 'prd'
-  ? '/subscriptions/8026cce0-ff03-4224-99a6-b3ab3194f58c/resourceGroups/abcdefprd-rg-monitor-001/providers/Microsoft.OperationalInsights/workspaces/abcdefprd-log-monitor-001'
-  : '/subscriptions/8026cce0-ff03-4224-99a6-b3ab3194f58c/resourceGroups/abcdefnonprd-rg-monitor-001/providers/Microsoft.OperationalInsights/workspaces/abcdefnonprd-log-monitor-001'
+
 
 var functionApplicationName = 'abcdef${environment}-func-${projectName}-${sequenceNumber}'
 
